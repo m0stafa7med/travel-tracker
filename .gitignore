@@ -26,6 +26,7 @@ Thumbs.db
 .env
 *.log
 frontend/src/environments/environment.ts
+deploy/nginx-active.conf
 
 # Uploads
 backend/uploads/

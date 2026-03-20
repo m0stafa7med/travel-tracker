@@ -8,7 +8,7 @@ Built with **Spring Boot**, **Angular 19**, **Mapbox GL**, and **MySQL**.
 
 ## Screenshots
 
-> _Add your screenshots here_
+![Travel Tracker Map View](docs/map-preview.png)
 
 ---
 

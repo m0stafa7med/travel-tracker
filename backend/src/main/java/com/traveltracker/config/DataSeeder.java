@@ -1,0 +1,243 @@
+package com.traveltracker.config;
+
+import com.traveltracker.entity.Admin;
+import com.traveltracker.entity.Country;
+import com.traveltracker.repository.AdminRepository;
+import com.traveltracker.repository.CountryRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+import java.util.List;
+
+@Component
+@RequiredArgsConstructor
+public class DataSeeder implements CommandLineRunner {
+
+    private final AdminRepository adminRepository;
+    private final CountryRepository countryRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public void run(String... args) {
+        // Seed admin user
+        if (adminRepository.count() == 0) {
+            adminRepository.save(Admin.builder()
+                    .username("admin")
+                    .password(passwordEncoder.encode("admin123"))
+                    .build());
+        }
+
+        // Seed all countries (adds missing ones, preserves existing data)
+        List<String[]> allCountries = Arrays.asList(
+            new String[]{"Afghanistan", "AF"},
+            new String[]{"Albania", "AL"},
+            new String[]{"Algeria", "DZ"},
+            new String[]{"Andorra", "AD"},
+            new String[]{"Angola", "AO"},
+            new String[]{"Antigua and Barbuda", "AG"},
+            new String[]{"Argentina", "AR"},
+            new String[]{"Armenia", "AM"},
+            new String[]{"Australia", "AU"},
+            new String[]{"Austria", "AT"},
+            new String[]{"Azerbaijan", "AZ"},
+            new String[]{"Bahamas", "BS"},
+            new String[]{"Bahrain", "BH"},
+            new String[]{"Bangladesh", "BD"},
+            new String[]{"Barbados", "BB"},
+            new String[]{"Belarus", "BY"},
+            new String[]{"Belgium", "BE"},
+            new String[]{"Belize", "BZ"},
+            new String[]{"Benin", "BJ"},
+            new String[]{"Bhutan", "BT"},
+            new String[]{"Bolivia", "BO"},
+            new String[]{"Bosnia and Herzegovina", "BA"},
+            new String[]{"Botswana", "BW"},
+            new String[]{"Brazil", "BR"},
+            new String[]{"Brunei", "BN"},
+            new String[]{"Bulgaria", "BG"},
+            new String[]{"Burkina Faso", "BF"},
+            new String[]{"Burundi", "BI"},
+            new String[]{"Cabo Verde", "CV"},
+            new String[]{"Cambodia", "KH"},
+            new String[]{"Cameroon", "CM"},
+            new String[]{"Canada", "CA"},
+            new String[]{"Central African Republic", "CF"},
+            new String[]{"Chad", "TD"},
+            new String[]{"Chile", "CL"},
+            new String[]{"China", "CN"},
+            new String[]{"Colombia", "CO"},
+            new String[]{"Comoros", "KM"},
+            new String[]{"Congo", "CG"},
+            new String[]{"Congo (DRC)", "CD"},
+            new String[]{"Costa Rica", "CR"},
+            new String[]{"Croatia", "HR"},
+            new String[]{"Cuba", "CU"},
+            new String[]{"Cyprus", "CY"},
+            new String[]{"Czech Republic", "CZ"},
+            new String[]{"Denmark", "DK"},
+            new String[]{"Djibouti", "DJ"},
+            new String[]{"Dominica", "DM"},
+            new String[]{"Dominican Republic", "DO"},
+            new String[]{"Ecuador", "EC"},
+            new String[]{"Egypt", "EG"},
+            new String[]{"El Salvador", "SV"},
+            new String[]{"Equatorial Guinea", "GQ"},
+            new String[]{"Eritrea", "ER"},
+            new String[]{"Estonia", "EE"},
+            new String[]{"Eswatini", "SZ"},
+            new String[]{"Ethiopia", "ET"},
+            new String[]{"Fiji", "FJ"},
+            new String[]{"Finland", "FI"},
+            new String[]{"France", "FR"},
+            new String[]{"Gabon", "GA"},
+            new String[]{"Gambia", "GM"},
+            new String[]{"Georgia", "GE"},
+            new String[]{"Germany", "DE"},
+            new String[]{"Ghana", "GH"},
+            new String[]{"Greece", "GR"},
+            new String[]{"Grenada", "GD"},
+            new String[]{"Guatemala", "GT"},
+            new String[]{"Guinea", "GN"},
+            new String[]{"Guinea-Bissau", "GW"},
+            new String[]{"Guyana", "GY"},
+            new String[]{"Haiti", "HT"},
+            new String[]{"Honduras", "HN"},
+            new String[]{"Hungary", "HU"},
+            new String[]{"Iceland", "IS"},
+            new String[]{"India", "IN"},
+            new String[]{"Indonesia", "ID"},
+            new String[]{"Iran", "IR"},
+            new String[]{"Iraq", "IQ"},
+            new String[]{"Ireland", "IE"},
+            new String[]{"Israel", "IL"},
+            new String[]{"Italy", "IT"},
+            new String[]{"Ivory Coast", "CI"},
+            new String[]{"Jamaica", "JM"},
+            new String[]{"Japan", "JP"},
+            new String[]{"Jordan", "JO"},
+            new String[]{"Kazakhstan", "KZ"},
+            new String[]{"Kenya", "KE"},
+            new String[]{"Kiribati", "KI"},
+            new String[]{"Kosovo", "XK"},
+            new String[]{"Kuwait", "KW"},
+            new String[]{"Kyrgyzstan", "KG"},
+            new String[]{"Laos", "LA"},
+            new String[]{"Latvia", "LV"},
+            new String[]{"Lebanon", "LB"},
+            new String[]{"Lesotho", "LS"},
+            new String[]{"Liberia", "LR"},
+            new String[]{"Libya", "LY"},
+            new String[]{"Liechtenstein", "LI"},
+            new String[]{"Lithuania", "LT"},
+            new String[]{"Luxembourg", "LU"},
+            new String[]{"Madagascar", "MG"},
+            new String[]{"Malawi", "MW"},
+            new String[]{"Malaysia", "MY"},
+            new String[]{"Maldives", "MV"},
+            new String[]{"Mali", "ML"},
+            new String[]{"Malta", "MT"},
+            new String[]{"Marshall Islands", "MH"},
+            new String[]{"Mauritania", "MR"},
+            new String[]{"Mauritius", "MU"},
+            new String[]{"Mexico", "MX"},
+            new String[]{"Micronesia", "FM"},
+            new String[]{"Moldova", "MD"},
+            new String[]{"Monaco", "MC"},
+            new String[]{"Mongolia", "MN"},
+            new String[]{"Montenegro", "ME"},
+            new String[]{"Morocco", "MA"},
+            new String[]{"Mozambique", "MZ"},
+            new String[]{"Myanmar", "MM"},
+            new String[]{"Namibia", "NA"},
+            new String[]{"Nauru", "NR"},
+            new String[]{"Nepal", "NP"},
+            new String[]{"Netherlands", "NL"},
+            new String[]{"New Zealand", "NZ"},
+            new String[]{"Nicaragua", "NI"},
+            new String[]{"Niger", "NE"},
+            new String[]{"Nigeria", "NG"},
+            new String[]{"North Korea", "KP"},
+            new String[]{"North Macedonia", "MK"},
+            new String[]{"Norway", "NO"},
+            new String[]{"Oman", "OM"},
+            new String[]{"Pakistan", "PK"},
+            new String[]{"Palau", "PW"},
+            new String[]{"Palestine", "PS"},
+            new String[]{"Panama", "PA"},
+            new String[]{"Papua New Guinea", "PG"},
+            new String[]{"Paraguay", "PY"},
+            new String[]{"Peru", "PE"},
+            new String[]{"Philippines", "PH"},
+            new String[]{"Poland", "PL"},
+            new String[]{"Portugal", "PT"},
+            new String[]{"Qatar", "QA"},
+            new String[]{"Romania", "RO"},
+            new String[]{"Russia", "RU"},
+            new String[]{"Rwanda", "RW"},
+            new String[]{"Saint Kitts and Nevis", "KN"},
+            new String[]{"Saint Lucia", "LC"},
+            new String[]{"Saint Vincent and the Grenadines", "VC"},
+            new String[]{"Samoa", "WS"},
+            new String[]{"San Marino", "SM"},
+            new String[]{"Sao Tome and Principe", "ST"},
+            new String[]{"Saudi Arabia", "SA"},
+            new String[]{"Senegal", "SN"},
+            new String[]{"Serbia", "RS"},
+            new String[]{"Seychelles", "SC"},
+            new String[]{"Sierra Leone", "SL"},
+            new String[]{"Singapore", "SG"},
+            new String[]{"Slovakia", "SK"},
+            new String[]{"Slovenia", "SI"},
+            new String[]{"Solomon Islands", "SB"},
+            new String[]{"Somalia", "SO"},
+            new String[]{"South Africa", "ZA"},
+            new String[]{"South Korea", "KR"},
+            new String[]{"South Sudan", "SS"},
+            new String[]{"Spain", "ES"},
+            new String[]{"Sri Lanka", "LK"},
+            new String[]{"Sudan", "SD"},
+            new String[]{"Suriname", "SR"},
+            new String[]{"Sweden", "SE"},
+            new String[]{"Switzerland", "CH"},
+            new String[]{"Syria", "SY"},
+            new String[]{"Taiwan", "TW"},
+            new String[]{"Tajikistan", "TJ"},
+            new String[]{"Tanzania", "TZ"},
+            new String[]{"Thailand", "TH"},
+            new String[]{"Timor-Leste", "TL"},
+            new String[]{"Togo", "TG"},
+            new String[]{"Tonga", "TO"},
+            new String[]{"Trinidad and Tobago", "TT"},
+            new String[]{"Tunisia", "TN"},
+            new String[]{"Turkey", "TR"},
+            new String[]{"Turkmenistan", "TM"},
+            new String[]{"Tuvalu", "TV"},
+            new String[]{"Uganda", "UG"},
+            new String[]{"Ukraine", "UA"},
+            new String[]{"United Arab Emirates", "AE"},
+            new String[]{"United Kingdom", "GB"},
+            new String[]{"United States", "US"},
+            new String[]{"Uruguay", "UY"},
+            new String[]{"Uzbekistan", "UZ"},
+            new String[]{"Vanuatu", "VU"},
+            new String[]{"Vatican City", "VA"},
+            new String[]{"Venezuela", "VE"},
+            new String[]{"Vietnam", "VN"},
+            new String[]{"Yemen", "YE"},
+            new String[]{"Zambia", "ZM"},
+            new String[]{"Zimbabwe", "ZW"}
+        );
+
+        for (String[] entry : allCountries) {
+            if (countryRepository.findByCode(entry[1]).isEmpty()) {
+                countryRepository.save(Country.builder()
+                        .name(entry[0])
+                        .code(entry[1])
+                        .build());
+            }
+        }
+    }
+}

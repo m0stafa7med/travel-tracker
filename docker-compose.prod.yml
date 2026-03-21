@@ -36,17 +36,12 @@ services:
       - traefik-net
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.travel-api.rule=Host(`travel.mostafadarwesh.com`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.travel-api.rule=Host(`travel.mostafadarwesh.com`) && (PathPrefix(`/api`) || PathPrefix(`/uploads`))"
       - "traefik.http.routers.travel-api.entrypoints=websecure"
       - "traefik.http.routers.travel-api.tls.certresolver=letsencrypt"
       - "traefik.http.routers.travel-api.priority=2"
       - "traefik.http.services.travel-api.loadbalancer.server.port=8080"
-      # Uploads route
-      - "traefik.http.routers.travel-uploads.rule=Host(`travel.mostafadarwesh.com`) && PathPrefix(`/uploads`)"
-      - "traefik.http.routers.travel-uploads.entrypoints=websecure"
-      - "traefik.http.routers.travel-uploads.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.travel-uploads.priority=3"
-      - "traefik.http.services.travel-uploads.loadbalancer.server.port=8080"
+      - "traefik.http.routers.travel-api.service=travel-api"
 
   frontend:
     build:

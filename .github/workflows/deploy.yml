@@ -3,6 +3,7 @@ name: Deploy Travel Tracker
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -17,7 +18,26 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /opt/travel-tracker
+            # Navigate to project
+            cd ~/projects/travel-tracker
+
+            # Pull latest code
             git pull origin main
-            docker compose -f docker-compose.prod.yml up -d --build
-            echo "Deployment complete!"
+
+            # Create .env if not exists
+            if [ ! -f .env ]; then
+              cat > .env << 'EOF'
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            MAPBOX_TOKEN=${{ secrets.MAPBOX_TOKEN }}
+            EOF
+            fi
+
+            # Build and deploy
+            docker compose -f docker-compose.prod.yml build --no-cache
+            docker compose -f docker-compose.prod.yml up -d
+
+            # Clean up old images
+            docker image prune -f
+
+            echo "Travel Tracker deployed successfully!"

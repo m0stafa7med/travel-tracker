@@ -236,18 +236,48 @@ This starts:
 - **Backend** on port `8080`
 - **Frontend** on port `4200`
 
-### Production Deployment
+### Production Deployment (VPS with Traefik)
 
-For VPS / Cloud deployment:
+This project integrates with an existing **Traefik** reverse proxy for automatic HTTPS.
 
-1. **Update `application.yml`** — Change DB credentials and JWT secret
-2. **Update `environment.prod.ts`** — Set your Mapbox token and API URL
-3. **Build & deploy:**
-   ```bash
-   docker-compose -f docker-compose.yml up -d --build
-   ```
-4. **Setup reverse proxy** (Nginx/Caddy) to route traffic
-5. **Enable HTTPS** with Let's Encrypt
+#### 1. Clone on Server
+```bash
+cd ~/projects
+git clone git@github.com:m0stafa7med/travel-tracker.git
+cd travel-tracker
+```
+
+#### 2. Create `.env`
+```bash
+cat > .env << 'EOF'
+DB_PASSWORD=YourStrongDBPassword
+JWT_SECRET=YourSuperSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong!!
+MAPBOX_TOKEN=pk.your_mapbox_public_token
+EOF
+```
+
+#### 3. Deploy
+```bash
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+Traefik automatically provisions an SSL certificate via Let's Encrypt for `travel.mostafadarwesh.com`.
+
+### CI/CD Pipeline (GitHub Actions)
+
+Auto-deploys on every push to `main`. Add these **GitHub Secrets**:
+
+| Secret | Description |
+|--------|-------------|
+| `SERVER_IP` | VPS IP address |
+| `SERVER_USER` | SSH username (e.g. `root`) |
+| `SSH_PRIVATE_KEY` | SSH private key for authentication |
+| `DB_PASSWORD` | MySQL root password |
+| `JWT_SECRET` | JWT signing key (min 256 bits) |
+| `MAPBOX_TOKEN` | Mapbox public access token |
+
+### DNS Setup
+Add an **A record** for `travel.mostafadarwesh.com` pointing to your server IP.
 
 ---
 
@@ -255,10 +285,9 @@ For VPS / Cloud deployment:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `SPRING_DATASOURCE_URL` | `jdbc:mysql://localhost:3306/travel_tracker` | Database URL |
-| `SPRING_DATASOURCE_USERNAME` | `root` | Database username |
-| `SPRING_DATASOURCE_PASSWORD` | `root` | Database password |
+| `DB_PASSWORD` | `StrongPassword123!` | MySQL root password |
 | `JWT_SECRET` | (set in application.yml) | JWT signing key |
+| `MAPBOX_TOKEN` | — | Mapbox public access token |
 
 ---
 

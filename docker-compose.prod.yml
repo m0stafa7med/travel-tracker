@@ -1,10 +1,8 @@
-version: '3.8'
-
 services:
   database:
     image: mysql:8.0
     container_name: travel-tracker-db
-    restart: always
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-StrongPassword123!}
       MYSQL_DATABASE: travel_tracker
@@ -16,70 +14,66 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - app-network
+      - travel-internal
 
   backend:
     build: ./backend
     container_name: travel-tracker-backend
-    restart: always
+    restart: unless-stopped
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/travel_tracker?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-StrongPassword123!}
-      JWT_SECRET: ${JWT_SECRET:-YourSuperSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong!!}
+      APP_JWT_SECRET: ${JWT_SECRET:-YourSuperSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong!!}
+      APP_UPLOAD_DIR: /app/uploads
     volumes:
       - uploads_data:/app/uploads
     depends_on:
       database:
         condition: service_healthy
     networks:
-      - app-network
+      - travel-internal
+      - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.travel-api.rule=Host(`travel.mostafadarwesh.com`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.travel-api.entrypoints=websecure"
+      - "traefik.http.routers.travel-api.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.travel-api.priority=2"
+      - "traefik.http.services.travel-api.loadbalancer.server.port=8080"
+      # Uploads route
+      - "traefik.http.routers.travel-uploads.rule=Host(`travel.mostafadarwesh.com`) && PathPrefix(`/uploads`)"
+      - "traefik.http.routers.travel-uploads.entrypoints=websecure"
+      - "traefik.http.routers.travel-uploads.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.travel-uploads.priority=3"
+      - "traefik.http.services.travel-uploads.loadbalancer.server.port=8080"
 
   frontend:
     build:
       context: ./frontend
       args:
-        MAPBOX_TOKEN: ${MAPBOX_TOKEN}
+        MAPBOX_TOKEN: ${MAPBOX_TOKEN:-pk.eyJ1IjoibTBzdGFmYWRhcndlNCIsImEiOiJjbW15emF6NHMwMm4wMnBxc2V6NGZwa3dyIn0.3WKQvIiDQmj5EpopkyilJw}
     container_name: travel-tracker-frontend
-    restart: always
+    restart: unless-stopped
     depends_on:
       - backend
     networks:
-      - app-network
-
-  nginx:
-    image: nginx:alpine
-    container_name: travel-tracker-nginx
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - certbot_data:/etc/letsencrypt:ro
-      - certbot_www:/var/www/certbot:ro
-    depends_on:
-      - frontend
-      - backend
-    networks:
-      - app-network
-
-  certbot:
-    image: certbot/certbot
-    container_name: travel-tracker-certbot
-    volumes:
-      - certbot_data:/etc/letsencrypt
-      - certbot_www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    networks:
-      - app-network
+      - travel-internal
+      - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.travel-web.rule=Host(`travel.mostafadarwesh.com`)"
+      - "traefik.http.routers.travel-web.entrypoints=websecure"
+      - "traefik.http.routers.travel-web.tls.certresolver=letsencrypt"
+      - "traefik.http.services.travel-web.loadbalancer.server.port=80"
+      - "traefik.http.routers.travel-web.priority=1"
 
 volumes:
   mysql_data:
   uploads_data:
-  certbot_data:
-  certbot_www:
 
 networks:
-  app-network:
+  travel-internal:
     driver: bridge
+  traefik-net:
+    external: true

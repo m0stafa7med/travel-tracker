@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Place } from '../../models/place.model';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-place-modal',
@@ -15,7 +16,7 @@ import { Place } from '../../models/place.model';
           <!-- Image Slider -->
           @if (place.images && place.images.length > 0) {
             <div class="relative h-64 bg-slate-800">
-              <img [src]="'http://localhost:8080' + place.images[currentImageIndex].url"
+              <img [src]="uploadsUrl + place.images[currentImageIndex].url"
                    [alt]="place.name"
                    class="w-full h-full object-cover">
               @if (place.images.length > 1) {
@@ -78,6 +79,7 @@ import { Place } from '../../models/place.model';
   `
 })
 export class PlaceModalComponent {
+  uploadsUrl = environment.uploadsUrl;
   @Input() place: Place | null = null;
   @Output() close = new EventEmitter<void>();
   currentImageIndex = 0;

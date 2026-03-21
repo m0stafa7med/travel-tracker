@@ -147,7 +147,7 @@ const MAPBOX_TOKEN = environment.mapboxToken;
               <!-- Image Slider -->
               @if (selectedPlace.images && selectedPlace.images.length > 0) {
                 <div class="relative h-48 overflow-hidden">
-                  <img [src]="'http://localhost:8080' + selectedPlace.images[currentImageIndex].url" [alt]="selectedPlace.name"
+                  <img [src]="uploadsUrl + selectedPlace.images[currentImageIndex].url" [alt]="selectedPlace.name"
                        class="w-full h-full object-cover">
                   @if (selectedPlace.images.length > 1) {
                     <button (click)="prevImage(); $event.stopPropagation()" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70 transition-all">
@@ -230,6 +230,7 @@ export class ManagePlacesComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef;
   private api = inject(ApiService);
 
+  uploadsUrl = environment.uploadsUrl;
   places: Place[] = [];
   countries: Country[] = [];
   showForm = false;

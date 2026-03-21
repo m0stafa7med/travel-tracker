@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Country } from '../../models/country.model';
 import { Place } from '../../models/place.model';
+import { environment } from '../../../environments/environment';
 
 const MOTHERLAND_CODE = 'EG';
 
@@ -39,7 +40,7 @@ const MOTHERLAND_CODE = 'EG';
                         class="shrink-0 glass-card-sm p-3 w-48 text-left hover:border-emerald-500/30 transition-all group">
                   @if (place.images && place.images.length > 0) {
                     <div class="w-full h-24 rounded-lg overflow-hidden mb-2">
-                      <img [src]="'http://localhost:8080' + place.images[0].url" [alt]="place.name"
+                      <img [src]="uploadsUrl + place.images[0].url" [alt]="place.name"
                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
                     </div>
                   } @else {
@@ -61,6 +62,7 @@ const MOTHERLAND_CODE = 'EG';
   `
 })
 export class CountryDetailComponent {
+  uploadsUrl = environment.uploadsUrl;
   @Input() country: Country | null = null;
   @Input() places: Place[] = [];
   @Output() selectPlace = new EventEmitter<Place>();

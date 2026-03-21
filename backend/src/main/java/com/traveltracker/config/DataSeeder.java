@@ -5,6 +5,7 @@ import com.traveltracker.entity.Country;
 import com.traveltracker.repository.AdminRepository;
 import com.traveltracker.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -20,13 +21,19 @@ public class DataSeeder implements CommandLineRunner {
     private final CountryRepository countryRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${app.admin.username:admin}")
+    private String adminUsername;
+
+    @Value("${app.admin.password:admin123}")
+    private String adminPassword;
+
     @Override
     public void run(String... args) {
-        // Seed admin user
+        // Seed admin user from environment variables
         if (adminRepository.count() == 0) {
             adminRepository.save(Admin.builder()
-                    .username("admin")
-                    .password(passwordEncoder.encode("admin123"))
+                    .username(adminUsername)
+                    .password(passwordEncoder.encode(adminPassword))
                     .build());
         }
 
